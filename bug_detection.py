@@ -13,11 +13,16 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 from sklearn.feature_extraction.image import extract_patches_2d
 
+# Load the images using Matplotlib's img.imread function
+
 b = img.imread('bug.png')
 im1 = img.imread('Chickens_with_bug.png')
 
 plt.imshow(im1)
 plt.imshow(b)
+
+# Extract patches from the larger image using sklearn.feature_extraction.image.extract_patches_2d
+
 patches1 = extract_patches_2d(im1, patch_size=(544, 667), max_patches=150)
     
 fig, axes = plt.subplots(10,10, figsize=(8,8))
@@ -39,6 +44,8 @@ rolling_mean = rolling.mean()
 #plt.plot(patches_series.index, patches_series.values)
 #plt.show()
 
+# Calculate the rolling mean of pixel values for both the extracted patches and the bug image
+
 plt.plot(rolling_mean.index, rolling_mean.values)
 plt.show()
 
@@ -46,6 +53,8 @@ b_rolling = bug_series.rolling(window=100)
 b_rolling_mean = b_rolling.mean()
 plt.plot(b_rolling_mean.index, b_rolling_mean.values)
 plt.show()
+
+# Compute correlations between the rolling means of the patches and the bug image
 
 correlations = []
 for i in range(len(patches1) - 1):
@@ -57,6 +66,8 @@ for i in range(len(patches1) - 1):
     b_rolling_mean = np.nan_to_num(b_rolling_mean)
     r, p = pearsonr(rolling_patch_mean, b_rolling_mean)
     correlations.append(r)
+    
+#Identify the patch with the highest correlation as the location of the bug
 
 if (1 - abs(np.nanmax(correlations))) < (1 - abs(np.nanmin(correlations))):
     strongest_r = np.nanmax(correlations)
